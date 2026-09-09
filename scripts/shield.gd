@@ -20,6 +20,7 @@ func _on_area_entered(area: Area2D) -> void:
 	var incoming_element: int = projectile.element
 	var shield_element: int = player.current_element
 
+
 	# Check counter matrix using the helper function
 	if is_element_blocked(shield_element, incoming_element):
 		projectile.queue_free()
