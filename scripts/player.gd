@@ -1,5 +1,8 @@
 extends CharacterBody2D
 
+enum Element { FIRE, WATER, EARTH }
+var current_element: Element = 0 as Element
+
 const SPEED: float = 130.0
 const JUMP_VELOCITY: float = -300.0
 # 1. Preload your projectile scene (make sure this path matches where you saved projectile.tscn)
@@ -7,11 +10,27 @@ const PROJECTILE_SCENE: PackedScene = preload("res://scenes/projectile.tscn")
 const SHIELD_SCENE: PackedScene = preload("res://scenes/shield.tscn")
 
 @export var fire_rate: float = 1.0 # Delay in seconds between shots
-@export var shield_offset: Vector2 = Vector2(30.0, 0.0)
+@export var shield_offset: Vector2 = Vector2(20.0, 0.0)
+
+@export_group("Shield Textures")
+@export var fire_shield_tex: Texture2D = preload("res://assets/fireShield.png")
+@export var water_shield_tex: Texture2D = preload("res://assets/waterShield.png")
+@export var earth_shield_tex: Texture2D = preload("res://assets/earthShield.png")
+
+@export_group("Projectile Textures")
+@export var fire_ball_tex: Texture2D = preload("res://assets/fireBall.png")
+@export var water_ball_tex: Texture2D = preload("res://assets/waterBall.png")
+@export var earth_ball_tex: Texture2D = preload("res://assets/earthBall.png")
 
 var can_shoot: bool = true
 var shield: Area2D
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+
+# Onready references to your scene tree nodes
+@onready var fire_sprite: AnimatedSprite2D = $FireAnimatedSprite2D
+@onready var water_sprite: AnimatedSprite2D = $WaterAnimatedSprite2D
+@onready var earth_sprite: AnimatedSprite2D = $EarthAnimatedSprite2D
+
+var current_sprite: AnimatedSprite2D
 
 func _ready() -> void:
 	# Spawn the shield as a child node so it follows player movement
@@ -20,32 +39,83 @@ func _ready() -> void:
 	shield.visible = false
 	shield.monitoring = false # Disables collision checks while hidden
 	add_child(shield)
+	
+	# Pick a random element (0: FIRE, 1: WATER, 2: EARTH)
+	var random_element: Element = (randi() % 3) as Element
+	set_element(random_element)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# 2. Listen for Left Mouse Click
-	#if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-	#if Input.is_action_just_pressed("shoot"):
+	if event is InputEventKey and event.pressed and not event.is_echo():
+		if event.is_action_pressed("fire_stance"):
+			set_element(Element.FIRE)
+		elif event.is_action_pressed("water_stance"):
+			set_element(Element.WATER)
+		elif event.is_action_pressed("earth_stance"):
+			set_element(Element.EARTH)
+
 	if event.is_action_pressed("shoot") and not event.is_echo():
 		shoot()
+	
+	
+func set_element(new_element: Element) -> void:
+	current_element = new_element
+	
+	var last_flip_h: bool = false
+	if current_sprite:
+		last_flip_h = current_sprite.flip_h
 
+	fire_sprite.visible = false
+	water_sprite.visible = false
+	earth_sprite.visible = false
+	
+	match current_element:
+		Element.FIRE:
+			current_sprite = fire_sprite
+		Element.WATER:
+			current_sprite = water_sprite
+		Element.EARTH:
+			current_sprite = earth_sprite
+			
+	current_sprite.visible = true
+	current_sprite.flip_h = last_flip_h
+
+	# SWAP SHIELD TEXTURE
+	if shield:
+		var shield_sprite: Sprite2D = shield.get_node_or_null("Shield") as Sprite2D
+		if shield_sprite:
+			match current_element:
+				Element.FIRE:
+					shield_sprite.texture = fire_shield_tex
+				Element.WATER:
+					shield_sprite.texture = water_shield_tex
+				Element.EARTH:
+					shield_sprite.texture = earth_shield_tex
+
+	
 func shoot() -> void:
-	# Explicitly typed variables to clear Godot's strict type warnings
 	if not can_shoot:
 		return
 		
 	can_shoot = false
 	var projectile: Node2D = PROJECTILE_SCENE.instantiate() as Node2D
 	
-	
-	# Aim directly toward mouse
+	# SWAP PROJECTILE TEXTURE
+	var proj_sprite: Sprite2D = projectile.get_node_or_null("Killzone/Projectile") as Sprite2D
+	if proj_sprite:
+		match current_element:
+			Element.FIRE:
+				proj_sprite.texture = fire_ball_tex
+			Element.WATER:
+				proj_sprite.texture = water_ball_tex
+			Element.EARTH:
+				proj_sprite.texture = earth_ball_tex
+
 	var mouse_pos: Vector2 = get_global_mouse_position()
 	var dir: Vector2 = (mouse_pos - global_position).normalized()
 	
-	#spawn projectile
 	projectile.global_position = global_position + (dir * 35.0)
 	projectile.rotation = dir.angle()
 	
-	# Add projectile to the main scene level
 	get_tree().current_scene.add_child(projectile)
 	await get_tree().create_timer(fire_rate).timeout
 	can_shoot = true
@@ -74,17 +144,17 @@ func _physics_process(delta: float) -> void:
 	
 	if is_on_floor():
 		if direction == 0:
-			animated_sprite.play("idle")
+			current_sprite.play("idle")
 		else:
-			animated_sprite.play("run")    
+			current_sprite.play("run")    
 	else:
-		animated_sprite.play("jump")
+		current_sprite.play("jump")
 
 	# Flip the sprite
 	if direction > 0:
-		animated_sprite.flip_h = false
+		current_sprite.flip_h = false
 	elif direction < 0:
-		animated_sprite.flip_h = true
+		current_sprite.flip_h = true
 			
 	if direction:
 		velocity.x = direction * SPEED
@@ -92,3 +162,6 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, SPEED)
 
 	move_and_slide()
+	
+	
+	

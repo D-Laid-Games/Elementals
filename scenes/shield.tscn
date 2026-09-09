@@ -10,9 +10,9 @@ size = Vector2(4, 22)
 collision_mask = 8
 script = ExtResource("1_ohv3a")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1715201063]
-scale = Vector2(2, 2.75)
-texture = ExtResource("2_e3gf5")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1491887975]
 shape = SubResource("RectangleShape2D_4imvi")
+
+[node name="Shield" type="Sprite2D" parent="." unique_id=1652768217]
+scale = Vector2(2, 2.75)
+texture = ExtResource("2_e3gf5")

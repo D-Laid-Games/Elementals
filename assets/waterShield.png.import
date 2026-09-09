@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhn8febwrals5"
-path="res://.godot/imported/fireBall.png-0db314d9ccfa2ddfe1a7b0ed6f5fc97f.ctex"
+uid="uid://c812llhqaexi5"
+path="res://.godot/imported/waterShield.png-2a7e424108c7687bf340013fd3320349.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/fireBall.png"
-dest_files=["res://.godot/imported/fireBall.png-0db314d9ccfa2ddfe1a7b0ed6f5fc97f.ctex"]
+source_file="res://assets/waterShield.png"
+dest_files=["res://.godot/imported/waterShield.png-2a7e424108c7687bf340013fd3320349.ctex"]
 
 [params]
 

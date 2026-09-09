@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhn8febwrals5"
-path="res://.godot/imported/fireBall.png-0db314d9ccfa2ddfe1a7b0ed6f5fc97f.ctex"
+uid="uid://c5ivwqsbqnaav"
+path="res://.godot/imported/earthShield.png-a01813331e89880f649ae15814bc67ea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/fireBall.png"
-dest_files=["res://.godot/imported/fireBall.png-0db314d9ccfa2ddfe1a7b0ed6f5fc97f.ctex"]
+source_file="res://assets/earthShield.png"
+dest_files=["res://.godot/imported/earthShield.png-a01813331e89880f649ae15814bc67ea.ctex"]
 
 [params]
 

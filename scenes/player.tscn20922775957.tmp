@@ -504,7 +504,6 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
-collision_layer = 2
 script = ExtResource("1_g2els")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=889094119]
@@ -512,16 +511,19 @@ position = Vector2(0, 7)
 shape = SubResource("CircleShape2D_ndusb")
 
 [node name="WaterAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1734551779]
+visible = false
 sprite_frames = SubResource("SpriteFrames_4imvi")
 animation = &"idle"
 autoplay = "idle"
 
 [node name="FireAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1310097832]
+visible = false
 sprite_frames = SubResource("SpriteFrames_g2els")
 animation = &"idle"
 autoplay = "idle"
 
 [node name="EarthAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1001628689]
+visible = false
 sprite_frames = SubResource("SpriteFrames_cywih")
 animation = &"idle"
 autoplay = "idle"

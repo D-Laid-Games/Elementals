@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhn8febwrals5"
-path="res://.godot/imported/fireBall.png-0db314d9ccfa2ddfe1a7b0ed6f5fc97f.ctex"
+uid="uid://cs6t1u5lh43pj"
+path="res://.godot/imported/waterBall.png-afb16a6b1bb1ab1fdf6fc1eecc4ddb3d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/fireBall.png"
-dest_files=["res://.godot/imported/fireBall.png-0db314d9ccfa2ddfe1a7b0ed6f5fc97f.ctex"]
+source_file="res://assets/waterBall.png"
+dest_files=["res://.godot/imported/waterBall.png-afb16a6b1bb1ab1fdf6fc1eecc4ddb3d.ctex"]
 
 [params]
 
