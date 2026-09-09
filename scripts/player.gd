@@ -98,6 +98,7 @@ func shoot() -> void:
 		
 	can_shoot = false
 	var projectile: Node2D = PROJECTILE_SCENE.instantiate() as Node2D
+	projectile.element = current_element
 	
 	# SWAP PROJECTILE TEXTURE
 	var proj_sprite: Sprite2D = projectile.get_node_or_null("Killzone/Projectile") as Sprite2D

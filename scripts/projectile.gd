@@ -17,6 +17,7 @@ extends Node2D
 
 @export var speed: float = 800.0
 @export var projectile_gravity: float = 1000.0
+var element: int = 0
 
 var velocity: Vector2 = Vector2.ZERO
 
