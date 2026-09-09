@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b503inpuib36y"]
 
-[ext_resource type="Texture2D" uid="uid://u65rbyqvpj56" path="res://assets/fireball.png" id="1_c8fcr"]
 [ext_resource type="Script" uid="uid://oq7xqne2qcyr" path="res://scripts/projectile.gd" id="1_q3m7n"]
+[ext_resource type="Texture2D" uid="uid://dhn8febwrals5" path="res://assets/fireBall.png" id="3_6q2a6"]
 [ext_resource type="PackedScene" uid="uid://dg4xppggdlqfe" path="res://scenes/killzone.tscn" id="3_softn"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ndusb"]
@@ -10,12 +10,13 @@ radius = 9.0
 [node name="Projectile" type="Node2D" unique_id=326664467]
 script = ExtResource("1_q3m7n")
 
-[node name="Fireball" type="Sprite2D" parent="." unique_id=884596120]
-scale = Vector2(2, 2)
-texture = ExtResource("1_c8fcr")
-
 [node name="Killzone" parent="." unique_id=8456000 instance=ExtResource("3_softn")]
 collision_layer = 8
+
+[node name="Projectile" type="Sprite2D" parent="Killzone" unique_id=197096753]
+position = Vector2(-4.7683716e-07, 0)
+scale = Vector2(2.25, 2.25)
+texture = ExtResource("3_6q2a6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone" unique_id=366342098]
 shape = SubResource("CircleShape2D_ndusb")
