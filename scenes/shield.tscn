@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bk4j44n3h0glc"]
+
+[ext_resource type="Script" uid="uid://i84e3aysoywm" path="res://scripts/shield.gd" id="1_ohv3a"]
+[ext_resource type="Texture2D" uid="uid://dja8bhejsb4lv" path="res://assets/fireShield.png" id="2_e3gf5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4imvi"]
+size = Vector2(4, 22)
+
+[node name="shield" type="Area2D" unique_id=2055430039]
+collision_mask = 8
+script = ExtResource("1_ohv3a")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1715201063]
+scale = Vector2(2, 2.75)
+texture = ExtResource("2_e3gf5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1491887975]
+shape = SubResource("RectangleShape2D_4imvi")
