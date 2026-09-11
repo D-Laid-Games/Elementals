@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dttb00piljhqb" path="res://scripts/slime.gd" id="1_n6pvg"]
 [ext_resource type="Texture2D" uid="uid://d4qnymfmemek" path="res://assets/slime_purple.png" id="1_p2gj0"]
-[ext_resource type="PackedScene" uid="uid://dg4xppggdlqfe" path="res://scenes/killzone.tscn" id="2_n6pvg"]
+[ext_resource type="PackedScene" uid="uid://dg4xppggdlqfe" path="res://scenes/damagezone.tscn" id="2_n6pvg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_p2gj0"]
 atlas = ExtResource("1_p2gj0")
@@ -53,10 +53,10 @@ autoplay = "default"
 frame = 2
 frame_progress = 0.9666162
 
-[node name="Killzone" parent="." unique_id=8456000 instance=ExtResource("2_n6pvg")]
+[node name="Damagezone" parent="." unique_id=8456000 instance=ExtResource("2_n6pvg")]
 collision_layer = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone" unique_id=313427773]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Damagezone" unique_id=313427773]
 position = Vector2(0, -7)
 shape = SubResource("RectangleShape2D_ndusb")
 

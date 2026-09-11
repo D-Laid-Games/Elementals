@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://dg4xppggdlqfe"]
 
-[ext_resource type="Script" uid="uid://deaavk88t6j1g" path="res://scripts/killzone.gd" id="1_xlapc"]
+[ext_resource type="Script" uid="uid://deaavk88t6j1g" path="res://scripts/damagezone.gd" id="1_rg5yr"]
 
-[node name="Killzone" type="Area2D" unique_id=8456000]
+[node name="Damagezone" type="Area2D" unique_id=8456000]
 collision_layer = 0
 collision_mask = 2
-script = ExtResource("1_xlapc")
+script = ExtResource("1_rg5yr")
 
 [node name="Timer" type="Timer" parent="." unique_id=1735401748]
 wait_time = 0.6
