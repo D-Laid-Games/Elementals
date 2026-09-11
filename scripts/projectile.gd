@@ -1,18 +1,3 @@
-#extends Area2D
-#
-#@export var speed: float = 600.0
-#
-#var direction: Vector2 = Vector2.ZERO
-#
-#func _physics_process(delta: float) -> void:
-	## Move the projectile forward in its current direction
-	#position += direction * speed * delta
-
-#func _on_body_entered(_body: Node2D) -> void:
-	# Add logic here to damage enemies (e.g., if body.is_in_group("enemies"): body.take_damage())
-	#queue_free() # Destroy bullet on impact
-
-
 extends Node2D
 
 @export var speed: float = 800.0

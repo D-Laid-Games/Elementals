@@ -503,6 +503,12 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ndusb"]
+bg_color = Color(0.2520276, 0.25202766, 0.25202754, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4imvi"]
+bg_color = Color(0.9882353, 0, 0.11372549, 1)
+
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
 collision_layer = 2
 script = ExtResource("1_g2els")
@@ -525,3 +531,14 @@ autoplay = "idle"
 sprite_frames = SubResource("SpriteFrames_cywih")
 animation = &"idle"
 autoplay = "idle"
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=547513888]
+offset_left = -9.0
+offset_top = -10.0
+offset_right = 8.0
+offset_bottom = -9.0
+theme_override_styles/background = SubResource("StyleBoxFlat_ndusb")
+theme_override_styles/fill = SubResource("StyleBoxFlat_4imvi")
+max_value = 10.0
+value = 5.0
+show_percentage = false

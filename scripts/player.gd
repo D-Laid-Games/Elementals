@@ -12,6 +12,8 @@ const SHIELD_SCENE: PackedScene = preload("res://scenes/shield.tscn")
 @export var fire_rate: float = 1.0 # Delay in seconds between shots
 @export var shield_offset: Vector2 = Vector2(20.0, 0.0)
 
+
+
 @export_group("Shield Textures")
 @export var fire_shield_tex: Texture2D = preload("res://assets/fireShield.png")
 @export var water_shield_tex: Texture2D = preload("res://assets/waterShield.png")
@@ -32,7 +34,17 @@ var shield: Area2D
 
 var current_sprite: AnimatedSprite2D
 
+@export var max_health: float = 10.0
+var current_health: float
+
+@onready var health_bar: ProgressBar = $HealthBar
+
 func _ready() -> void:
+	current_health = max_health
+	if health_bar:
+		health_bar.max_value = max_health
+		health_bar.value = current_health
+	
 	# Spawn the shield as a child node so it follows player movement
 	shield = SHIELD_SCENE.instantiate() as Area2D
 	shield.position = shield_offset
@@ -43,6 +55,28 @@ func _ready() -> void:
 	# Pick a random element (0: FIRE, 1: WATER, 2: EARTH)
 	var random_element: Element = (randi() % 3) as Element
 	set_element(random_element)
+	
+
+func take_damage(amount: float) -> void:
+	current_health -= amount
+	current_health = clamp(current_health, 0.0, max_health)
+	
+	if health_bar:
+		health_bar.value = current_health
+		
+	if current_health <= 0.0:
+		die()
+		
+
+func die() -> void:
+	# Trigger scene reload or death logic
+	Engine.time_scale = 0.5
+	if has_node("CollisionShape2D"):
+		$CollisionShape2D.queue_free()
+	
+	await get_tree().create_timer(0.5).timeout
+	Engine.time_scale = 1.0
+	get_tree().reload_current_scene()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.is_echo():
@@ -101,7 +135,7 @@ func shoot() -> void:
 	projectile.element = current_element
 	
 	# SWAP PROJECTILE TEXTURE
-	var proj_sprite: Sprite2D = projectile.get_node_or_null("Killzone/Projectile") as Sprite2D
+	var proj_sprite: Sprite2D = projectile.get_node_or_null("Damagezone/Projectile") as Sprite2D
 	if proj_sprite:
 		match current_element:
 			Element.FIRE:
