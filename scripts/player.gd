@@ -12,8 +12,6 @@ const SHIELD_SCENE: PackedScene = preload("res://scenes/shield.tscn")
 @export var fire_rate: float = 1.0 # Delay in seconds between shots
 @export var shield_offset: Vector2 = Vector2(20.0, 0.0)
 
-
-
 @export_group("Shield Textures")
 @export var fire_shield_tex: Texture2D = preload("res://assets/fireShield.png")
 @export var water_shield_tex: Texture2D = preload("res://assets/waterShield.png")
@@ -38,6 +36,19 @@ var current_sprite: AnimatedSprite2D
 var current_health: float
 
 @onready var health_bar: ProgressBar = $HealthBar
+
+@export var max_jumps: int
+var jumps_left: int
+
+
+@export var roll_speed: float = 400.0
+@export var roll_duration: float = 0.10
+@export var roll_cooldown: float = 0.8
+
+var is_rolling: bool = false
+var can_roll: bool = true
+var is_invincible: bool = false
+var roll_direction: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
@@ -89,10 +100,45 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("shoot") and not event.is_echo():
 		shoot()
+		
+	# Inside _unhandled_input(event: InputEvent) in player.gd
+	if event.is_action_pressed("ability_button") and not event.is_echo():
+		if current_element == Element.FIRE and can_roll and not is_rolling:
+			perform_roll()
+
+func perform_roll() -> void:
+	is_rolling = true
+	can_roll = false
+	is_invincible = true
 	
+	# Lock the direction at the start of the roll
+	roll_direction = -1.0 if current_sprite.flip_h else 1.0
 	
+
+	# Wait out roll duration
+	await get_tree().create_timer(roll_duration).timeout
+	is_rolling = false
+	is_invincible = false
+
+	# Wait out cooldown
+	await get_tree().create_timer(roll_cooldown).timeout
+	can_roll = true
+
+
 func set_element(new_element: Element) -> void:
 	current_element = new_element
+	
+	max_jumps = 2 if current_element == Element.WATER else 1
+	
+	if not is_on_floor():
+		if current_element == Element.WATER:
+			# Give access to the 2nd jump if it hasn't been used yet
+			jumps_left = max(jumps_left, 1)
+		else:
+			# Instantly revoke mid-air jumps for non-Water stances
+			jumps_left = 0
+	else:
+		jumps_left = max_jumps
 	
 	var last_flip_h: bool = false
 	if current_sprite:
@@ -156,7 +202,18 @@ func shoot() -> void:
 	can_shoot = true
 
 func _physics_process(delta: float) -> void:
+	if is_rolling:
+		velocity.x = roll_direction * roll_speed
+		if not is_on_floor():
+			velocity += get_gravity() * delta
+		move_and_slide()
+		return # Bypasses all standard input handling during the roll
 	
+	var current_speed: float = SPEED
+	
+	if Input.is_action_pressed("ability_button") and current_element == Element.EARTH:
+		current_speed = SPEED * 2
+		
 	# Toggle Shield with Right Click (MOUSE_BUTTON_RIGHT)
 	var is_shielding: bool = Input.is_action_pressed("shield")
 	shield.visible = is_shielding
@@ -171,19 +228,22 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	# Handle jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-		
+
 	var direction: float = Input.get_axis("move_left", "move_right")
 	
 	if is_on_floor():
+		max_jumps = 2 if current_element == Element.WATER else 1
+		jumps_left = max_jumps
 		if direction == 0:
 			current_sprite.play("idle")
 		else:
 			current_sprite.play("run")    
 	else:
 		current_sprite.play("jump")
+	
+	if Input.is_action_just_pressed("jump") and jumps_left > 0:
+		velocity.y = JUMP_VELOCITY
+		jumps_left -= 1
 
 	# Flip the sprite
 	if direction > 0:
@@ -192,9 +252,9 @@ func _physics_process(delta: float) -> void:
 		current_sprite.flip_h = true
 			
 	if direction:
-		velocity.x = direction * SPEED
+		velocity.x = direction * current_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0.0, SPEED)
+		velocity.x = move_toward(velocity.x, 0.0, current_speed)
 
 	move_and_slide()
 	
