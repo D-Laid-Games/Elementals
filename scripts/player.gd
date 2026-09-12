@@ -39,9 +39,9 @@ var current_health: float
 
 @export var max_jumps: int
 var jumps_left: int
+var has_water_double_jumped: bool
 
-
-@export var roll_speed: float = 400.0
+@export var roll_speed: float = 800.0
 @export var roll_duration: float = 0.10
 @export var roll_cooldown: float = 0.8
 
@@ -90,19 +90,24 @@ func die() -> void:
 	get_tree().reload_current_scene()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.is_echo():
-		if event.is_action_pressed("fire_stance"):
-			set_element(Element.FIRE)
-		elif event.is_action_pressed("water_stance"):
-			set_element(Element.WATER)
-		elif event.is_action_pressed("earth_stance"):
-			set_element(Element.EARTH)
+	if event is InputEventMouseButton and event.pressed:
+		print("Mouse button pressed index: ", event.button_index)
+	if event.is_echo():
+		return
+		
+	#if event is InputEventKey and event.pressed:
+	if event.is_action_pressed("fire_stance"):
+		set_element(Element.FIRE)
+	elif event.is_action_pressed("water_stance"):
+		set_element(Element.WATER)
+	elif event.is_action_pressed("earth_stance"):
+		set_element(Element.EARTH)
 
-	if event.is_action_pressed("shoot") and not event.is_echo():
+	if event.is_action_pressed("shoot"):
 		shoot()
 		
 	# Inside _unhandled_input(event: InputEvent) in player.gd
-	if event.is_action_pressed("ability_button") and not event.is_echo():
+	if event.is_action_pressed("ability_button"):
 		if current_element == Element.FIRE and can_roll and not is_rolling:
 			perform_roll()
 
@@ -133,12 +138,14 @@ func set_element(new_element: Element) -> void:
 	if not is_on_floor():
 		if current_element == Element.WATER:
 			# Give access to the 2nd jump if it hasn't been used yet
-			jumps_left = max(jumps_left, 1)
+			if not has_water_double_jumped:
+				jumps_left = max(jumps_left, 1)
 		else:
 			# Instantly revoke mid-air jumps for non-Water stances
-			jumps_left = 0
+			jumps_left = min(jumps_left, 1)
 	else:
 		jumps_left = max_jumps
+		has_water_double_jumped = false
 	
 	var last_flip_h: bool = false
 	if current_sprite:
@@ -234,6 +241,7 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor():
 		max_jumps = 2 if current_element == Element.WATER else 1
 		jumps_left = max_jumps
+		has_water_double_jumped = false
 		if direction == 0:
 			current_sprite.play("idle")
 		else:
@@ -244,7 +252,9 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and jumps_left > 0:
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
-
+		if not is_on_floor():
+			has_water_double_jumped = true
+ 			
 	# Flip the sprite
 	if direction > 0:
 		current_sprite.flip_h = false
