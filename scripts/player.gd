@@ -183,11 +183,6 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-#@rpc("any_peer", "call_remote", "unreliable")
-#func sync_shield_transform(pos: Vector2, rot: float) -> void:
-	#if shield:
-		#shield.position = pos
-		#shield.rotation = rot
 
 # ==============================================================================
 # ACTIONS & MECHANICS
@@ -263,14 +258,14 @@ func sync_health(new_health: float) -> void:
 	current_health = new_health
 	if health_bar:
 		health_bar.value = current_health
-
+		
 @rpc("any_peer", "call_local", "reliable")
 func die() -> void:
-	current_health = max_health
-	if health_bar:
-		health_bar.value = max_health
-	if is_multiplayer_authority():
-		global_position = Vector2(600, -200) # Reset position safely
+	if multiplayer.is_server():
+		var spawner: MultiplayerSpawner = get_tree().current_scene.get_node_or_null("MultiplayerSpawner")
+		if spawner and spawner.has_method("respawn_player"):
+			spawner.respawn_player(name.to_int())
+
 
 # ==============================================================================
 # HELPER FUNCTIONS

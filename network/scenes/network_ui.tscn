@@ -24,5 +24,13 @@ text = "SERVER"
 layout_mode = 2
 text = "CLIENT"
 
+[node name="IP" type="LineEdit" parent="VBoxContainer" unique_id=453660981]
+layout_mode = 2
+placeholder_text = "127.0.0.1"
+
+[node name="Port" type="LineEdit" parent="VBoxContainer" unique_id=2105676177]
+layout_mode = 2
+placeholder_text = "42069"
+
 [connection signal="pressed" from="VBoxContainer/Server" to="." method="_on_server_pressed"]
 [connection signal="pressed" from="VBoxContainer/Client" to="." method="_on_client_pressed"]
