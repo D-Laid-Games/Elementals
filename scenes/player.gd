@@ -6,20 +6,32 @@ enum Element { FIRE, WATER, EARTH }
 @export var current_element: Element = Element.FIRE:
 	set(value):
 		current_element = value
-		_update_element_visuals()
+		if is_node_ready():
+			_update_element_visuals()
 
 @export var facing_left: bool = false:
 	set(value):
 		facing_left = value
-		if current_sprite:
+		if is_node_ready() and current_sprite:
 			current_sprite.flip_h = value
 
 @export var is_shielding: bool = false:
 	set(value):
 		is_shielding = value
-		if shield:
+		if is_node_ready() and shield:
 			shield.visible = value
-			shield.monitoring = value
+			# Safe check for multiplayer tree state
+			if is_inside_tree() and multiplayer:
+				shield.monitoring = value if multiplayer.is_server() else false
+
+@export var shield_rotation: float = 0.0:
+	set(value):
+		shield_rotation = value
+		if is_node_ready() and shield:
+			shield.rotation = value
+			shield.position = Vector2.RIGHT.rotated(value) * shield_offset.length()
+			
+
 
 # --- STATS & CONFIG ---
 const SPEED: float = 130.0
@@ -60,18 +72,15 @@ var has_water_double_jumped: bool = false
 var current_sprite: AnimatedSprite2D
 var shield: Area2D
 
+
 # ==============================================================================
 # LIFECYCLE & INITIALIZATION
 # ==============================================================================
 func _enter_tree() -> void:
-	# Assign authority before the scene tree finishes building child nodes
 	if name.is_valid_int():
 		set_multiplayer_authority(name.to_int())
-
+		
 func _ready() -> void:
-	# 1. Network Authority Assignment
-	
-
 	# 2. Local Setup
 	current_health = max_health
 	if health_bar:
@@ -113,10 +122,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		perform_roll()
 
 func _physics_process(delta: float) -> void:
+	# 1. GUARD: Exit immediately if this node belongs to a remote peer
 	if not is_multiplayer_authority():
 		return
 
-	# Roll Execution
+	# 2. ROLL EXECUTION
 	if is_rolling:
 		velocity.x = roll_direction * roll_speed
 		if not is_on_floor():
@@ -124,18 +134,20 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	# Speed Calculation
+	# 3. MOVEMENT SPEED (EARTH DASH)
 	var current_speed: float = SPEED
 	if Input.is_action_pressed("ability_button") and current_element == Element.EARTH:
 		current_speed = SPEED * 2.0
 
-	# Shield Toggle
+	# 4. SHIELD TOGGLE & AIMING
+	# Inside _physics_process(delta) in player.gd:
 	is_shielding = Input.is_action_pressed("shield")
 	var mouse_dir: Vector2 = (get_global_mouse_position() - global_position).normalized()
-	shield.position = mouse_dir * shield_offset.length()
-	shield.rotation = mouse_dir.angle()
+	
+	# Setting this variable triggers the setter locally AND replicates to server/clients
+	shield_rotation = mouse_dir.angle()
 
-	# Gravity & Jump Reset
+	# 5. GRAVITY & JUMP RESET
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	else:
@@ -143,31 +155,39 @@ func _physics_process(delta: float) -> void:
 		jumps_left = max_jumps
 		has_water_double_jumped = false
 
-	# Horizontal Movement & Animations
+	# 6. HORIZONTAL INPUT & FACING
 	var direction: float = Input.get_axis("move_left", "move_right")
 	if direction > 0:
 		facing_left = false
 	elif direction < 0:
 		facing_left = true
 
+	# 7. ANIMATIONS
 	if is_on_floor():
 		current_sprite.play("idle" if direction == 0 else "run")
 	else:
 		current_sprite.play("jump")
 
-	# Jump Execution
+	# 8. JUMP EXECUTION
 	if Input.is_action_just_pressed("jump") and jumps_left > 0:
 		velocity.y = JUMP_VELOCITY
 		jumps_left -= 1
 		if not is_on_floor():
 			has_water_double_jumped = true
 
+	# 9. APPLY VELOCITY
 	if direction != 0:
 		velocity.x = direction * current_speed
 	else:
 		velocity.x = move_toward(velocity.x, 0.0, current_speed)
 
 	move_and_slide()
+
+#@rpc("any_peer", "call_remote", "unreliable")
+#func sync_shield_transform(pos: Vector2, rot: float) -> void:
+	#if shield:
+		#shield.position = pos
+		#shield.rotation = rot
 
 # ==============================================================================
 # ACTIONS & MECHANICS
@@ -186,24 +206,36 @@ func perform_roll() -> void:
 	await get_tree().create_timer(roll_cooldown).timeout
 	can_roll = true
 
+		
 func shoot() -> void:
 	if not can_shoot:
 		return
 
-	if not multiplayer.is_server():
-		rpc_id(1, "request_shoot")
-		return
-
-	can_shoot = false
-	var projectile: Node2D = PROJECTILE_SCENE.instantiate() as Node2D
-	
+	# 1. Calculate direction on the local player's machine
 	var mouse_pos: Vector2 = get_global_mouse_position()
 	var dir: Vector2 = (mouse_pos - global_position).normalized()
+
+	# 2. If client, send the calculated direction to the server
+	if not multiplayer.is_server():
+		rpc_id(1, "request_shoot", dir)
+		return
+
+	# 3. If host/server, fire directly using local direction
+	_spawn_projectile(dir)
+
+@rpc("any_peer", "call_local", "reliable")
+func request_shoot(dir: Vector2) -> void:
+	if multiplayer.is_server() and can_shoot:
+		# Use the direction passed from the client instead of get_global_mouse_position()
+		_spawn_projectile(dir)
+
+func _spawn_projectile(dir: Vector2) -> void:
+	can_shoot = false
+	var projectile: Node2D = PROJECTILE_SCENE.instantiate() as Node2D
 	
 	projectile.global_position = global_position + (dir * 35.0)
 	projectile.rotation = dir.angle()
 	
-	# Setting element triggers the setter inside projectile.gd automatically
 	if "element" in projectile:
 		projectile.element = current_element
 
@@ -211,11 +243,6 @@ func shoot() -> void:
 	
 	await get_tree().create_timer(fire_rate).timeout
 	can_shoot = true
-
-@rpc("any_peer", "call_local", "reliable")
-func request_shoot() -> void:
-	if multiplayer.is_server():
-		shoot()
 
 # ==============================================================================
 # COMBAT & HEALTH (SERVER AUTHORITATIVE)
@@ -267,6 +294,9 @@ func _update_element_visuals() -> void:
 
 	if shield:
 		var shield_sprite: Sprite2D = shield.get_node_or_null("Shield") as Sprite2D
+		if not shield_sprite:
+			shield_sprite = shield.get_node_or_null("Sprite2D") as Sprite2D
+			
 		if shield_sprite:
 			match current_element:
 				Element.FIRE: shield_sprite.texture = fire_shield_tex

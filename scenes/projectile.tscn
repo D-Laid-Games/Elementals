@@ -7,6 +7,14 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_ndusb"]
 radius = 9.0
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_softn"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:element")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+
 [node name="Projectile" type="Node2D" unique_id=326664467]
 script = ExtResource("1_q3m7n")
 
@@ -20,3 +28,6 @@ texture = ExtResource("3_6q2a6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Damagezone" unique_id=366342098]
 shape = SubResource("CircleShape2D_ndusb")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1581029294]
+replication_config = SubResource("SceneReplicationConfig_softn")
