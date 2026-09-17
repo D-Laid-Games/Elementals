@@ -1,13 +1,13 @@
 extends Node
 
-const IP_ADDRESS: String = "localhost"
-const PORT: int = 42069
+const DEFAULT_IP: String = "localhost"
+const DEFAULT_PORT: int = 42069
 
 var peer: ENetMultiplayerPeer
 
-func start_server() -> void:
+func start_server(port: int = DEFAULT_PORT) -> void:
 	peer = ENetMultiplayerPeer.new()
-	peer.create_server(PORT)
+	peer.create_server(port)
 	multiplayer.multiplayer_peer = peer
 	
 	# Force the server host to spawn player ID 1
@@ -15,7 +15,7 @@ func start_server() -> void:
 	if spawner:
 		spawner.spawn_player(1)
 
-func start_client() -> void:
+func start_client(ip: String = DEFAULT_IP, port: int = DEFAULT_PORT) -> void:
 	peer = ENetMultiplayerPeer.new()
-	peer.create_client(IP_ADDRESS, PORT)
+	peer.create_client(ip, port)
 	multiplayer.multiplayer_peer = peer
