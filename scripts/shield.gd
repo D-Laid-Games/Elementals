@@ -9,6 +9,9 @@ func _ready() -> void:
 	area_entered.connect(_on_area_entered)
 
 func _on_area_entered(area: Area2D) -> void:
+	if not multiplayer.is_server():
+		return
+		
 	# Retrieve the root projectile node
 	var projectile: Node2D = area.get_parent() as Node2D
 	if not projectile:

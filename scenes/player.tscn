@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dsitnylb8wxef"]
 
-[ext_resource type="Script" uid="uid://dpv4ut35us5sf" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Script" uid="uid://bqnfk262be4n6" path="res://scenes/player.gd" id="1_dqkch"]
 [ext_resource type="Texture2D" uid="uid://cl42pacjd1agx" path="res://assets/knightOrange.png" id="2_g2els"]
 [ext_resource type="Texture2D" uid="uid://bgrf8a5jonlsa" path="res://assets/knightBlue.png" id="3_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://b8cxinrp6ot14" path="res://assets/knightGreen.png" id="5_tuyoq"]
@@ -542,9 +542,27 @@ bg_color = Color(0.2520276, 0.25202766, 0.25202754, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4imvi"]
 bg_color = Color(0.9882353, 0, 0.11372549, 1)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qhqgy"]
+properties/0/path = NodePath(".:current_element")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:facing_left")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:is_shielding")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:shield_rotation")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
+position = Vector2(22, -46)
 collision_layer = 2
-script = ExtResource("1_g2els")
+script = ExtResource("1_dqkch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=889094119]
 position = Vector2(0, 7)
@@ -575,3 +593,6 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_4imvi")
 max_value = 10.0
 value = 5.0
 show_percentage = false
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=381843364]
+replication_config = SubResource("SceneReplicationConfig_qhqgy")
