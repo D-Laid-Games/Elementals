@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c5ivwqsbqnaav"
-path="res://.godot/imported/earthShield.png-a01813331e89880f649ae15814bc67ea.ctex"
+uid="uid://c812llhqaexi5"
+path="res://.godot/imported/waterShield.png-dbdeecaa18f03476dcc5274c7e26143c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/earthShield.png"
-dest_files=["res://.godot/imported/earthShield.png-a01813331e89880f649ae15814bc67ea.ctex"]
+source_file="res://assets/shield/waterShield.png"
+dest_files=["res://.godot/imported/waterShield.png-dbdeecaa18f03476dcc5274c7e26143c.ctex"]
 
 [params]
 

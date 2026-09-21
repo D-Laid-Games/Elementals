@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dth6bmh31hgiw"]
 
-[ext_resource type="Script" uid="uid://c4e5p3mpc8rc8" path="res://network/scripts/network_ui.gd" id="1_13irk"]
+[ext_resource type="Script" uid="uid://c4e5p3mpc8rc8" path="res://scripts/network/network_ui.gd" id="1_13irk"]
 
 [node name="NetworkUI" type="Control" unique_id=945227119]
 layout_mode = 3

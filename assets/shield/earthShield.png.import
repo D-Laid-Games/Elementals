@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cd7owsucc5sjj"
-path="res://.godot/imported/knight.png-b33800fb7ddfd7bcabc4517f1e9e68e8.ctex"
+uid="uid://c5ivwqsbqnaav"
+path="res://.godot/imported/earthShield.png-0d9320629e4e3ef2932bc0397b5096e6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/knight.png"
-dest_files=["res://.godot/imported/knight.png-b33800fb7ddfd7bcabc4517f1e9e68e8.ctex"]
+source_file="res://assets/shield/earthShield.png"
+dest_files=["res://.godot/imported/earthShield.png-0d9320629e4e3ef2932bc0397b5096e6.ctex"]
 
 [params]
 

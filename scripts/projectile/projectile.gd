@@ -21,9 +21,9 @@ func _update_texture() -> void:
 	var proj_sprite: Sprite2D = get_node_or_null("Damagezone/Projectile") as Sprite2D
 	if proj_sprite:
 		match element:
-			0: proj_sprite.texture = preload("res://assets/fireBall.png")
-			1: proj_sprite.texture = preload("res://assets/waterBall.png")
-			2: proj_sprite.texture = preload("res://assets/earthBall.png")
+			0: proj_sprite.texture = preload("res://assets/projectile/fireBall.png")
+			1: proj_sprite.texture = preload("res://assets/projectile/waterBall.png")
+			2: proj_sprite.texture = preload("res://assets/projectile/earthBall.png")
 
 func _physics_process(delta: float) -> void:
 	# Apply gravity over time to pull the projectile down
