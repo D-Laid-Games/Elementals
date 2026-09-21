@@ -18,7 +18,7 @@ func _ready() -> void:
 	
 	
 func _update_texture() -> void:
-	var proj_sprite: Sprite2D = get_node_or_null("Damagezone/Projectile") as Sprite2D
+	var proj_sprite: Sprite2D = get_node_or_null("DamageZone/Projectile") as Sprite2D
 	if proj_sprite:
 		match element:
 			0: proj_sprite.texture = preload("res://assets/projectile/fireBall.png")
