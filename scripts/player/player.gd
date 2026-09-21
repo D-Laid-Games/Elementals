@@ -36,17 +36,17 @@ enum Element { FIRE, WATER, EARTH }
 # --- STATS & CONFIG ---
 const SPEED: float = 130.0
 const JUMP_VELOCITY: float = -300.0
-const PROJECTILE_SCENE: PackedScene = preload("res://scenes/projectile.tscn")
-const SHIELD_SCENE: PackedScene = preload("res://scenes/shield.tscn")
+const PROJECTILE_SCENE: PackedScene = preload("res://scenes/projectile/projectile.tscn")
+const SHIELD_SCENE: PackedScene = preload("res://scenes/shield/shield.tscn")
 
 @export var max_health: float = 10.0
 @export var fire_rate: float = 1.0
 @export var shield_offset: Vector2 = Vector2(20.0, 0.0)
 
 @export_group("Shield Textures")
-@export var fire_shield_tex: Texture2D = preload("res://assets/fireShield.png")
-@export var water_shield_tex: Texture2D = preload("res://assets/waterShield.png")
-@export var earth_shield_tex: Texture2D = preload("res://assets/earthShield.png")
+@export var fire_shield_tex: Texture2D = preload("res://assets/shield/fireShield.png")
+@export var water_shield_tex: Texture2D = preload("res://assets/shield/waterShield.png")
+@export var earth_shield_tex: Texture2D = preload("res://assets/shield/earthShield.png")
 
 @export_group("Movement & Roll")
 @export var roll_speed: float = 800.0

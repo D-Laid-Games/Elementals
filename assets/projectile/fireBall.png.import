@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cl42pacjd1agx"
-path="res://.godot/imported/knightOrange.png-4a083bbe0ba965be43cfe8e73034b757.ctex"
+uid="uid://dhn8febwrals5"
+path="res://.godot/imported/fireBall.png-906741c351da06a49fe79eaedab4c73f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/knightOrange.png"
-dest_files=["res://.godot/imported/knightOrange.png-4a083bbe0ba965be43cfe8e73034b757.ctex"]
+source_file="res://assets/projectile/fireBall.png"
+dest_files=["res://.godot/imported/fireBall.png-906741c351da06a49fe79eaedab4c73f.ctex"]
 
 [params]
 

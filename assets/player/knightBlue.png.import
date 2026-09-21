@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dja8bhejsb4lv"
-path="res://.godot/imported/fireShield.png-6dba871c9cc7909d53d0ea1f92b3ea25.ctex"
+uid="uid://bgrf8a5jonlsa"
+path="res://.godot/imported/knightBlue.png-0e045cbaa8d0e7e2fd6455e4888943c5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/fireShield.png"
-dest_files=["res://.godot/imported/fireShield.png-6dba871c9cc7909d53d0ea1f92b3ea25.ctex"]
+source_file="res://assets/player/knightBlue.png"
+dest_files=["res://.godot/imported/knightBlue.png-0e045cbaa8d0e7e2fd6455e4888943c5.ctex"]
 
 [params]
 

@@ -1,12 +1,12 @@
 [gd_scene format=4 uid="uid://dxvksof0fy6mi"]
 
-[ext_resource type="PackedScene" uid="uid://dth6bmh31hgiw" path="res://network/scenes/network_ui.tscn" id="1_lnu2h"]
-[ext_resource type="PackedScene" uid="uid://dsitnylb8wxef" path="res://scenes/player.tscn" id="1_uwrxv"]
-[ext_resource type="Texture2D" uid="uid://b1h01w430g4q6" path="res://assets/world_tileset.png" id="1_yqjtg"]
-[ext_resource type="Script" uid="uid://bsvko02jcrcgq" path="res://network/scripts/multiplayer_player_spawner.gd" id="4_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://dth6bmh31hgiw" path="res://scenes/network_ui.tscn" id="1_kelw5"]
+[ext_resource type="Texture2D" uid="uid://b1h01w430g4q6" path="res://assets/game/world_tileset.png" id="2_lfrn8"]
+[ext_resource type="Script" uid="uid://bsvko02jcrcgq" path="res://scripts/network/multiplayer_player_spawner.gd" id="3_kelw5"]
+[ext_resource type="PackedScene" uid="uid://dsitnylb8wxef" path="res://scenes/player/player.tscn" id="4_kelw5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lnu2h"]
-texture = ExtResource("1_yqjtg")
+texture = ExtResource("2_lfrn8")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0 = 0
@@ -173,7 +173,7 @@ sources/0 = SubResource("TileSetAtlasSource_lnu2h")
 
 [node name="Game" type="Node2D" unique_id=109196872]
 
-[node name="NetworkUI" parent="." unique_id=945227119 instance=ExtResource("1_lnu2h")]
+[node name="NetworkUI" parent="." unique_id=945227119 instance=ExtResource("1_kelw5")]
 offset_left = -571.0
 offset_top = -642.0
 offset_right = -571.0
@@ -188,7 +188,6 @@ tile_set = SubResource("TileSet_ndusb")
 position = Vector2(-1, -323)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=289908258]
-_spawnable_scenes = PackedStringArray("uid://dsitnylb8wxef", "uid://b503inpuib36y")
 spawn_path = NodePath("..")
-script = ExtResource("4_lbhrr")
-network_player = ExtResource("1_uwrxv")
+script = ExtResource("3_kelw5")
+network_player = ExtResource("4_kelw5")

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bk4j44n3h0glc"]
 
-[ext_resource type="Script" uid="uid://i84e3aysoywm" path="res://scripts/shield.gd" id="1_ohv3a"]
-[ext_resource type="Texture2D" uid="uid://dja8bhejsb4lv" path="res://assets/fireShield.png" id="2_e3gf5"]
+[ext_resource type="Script" uid="uid://i84e3aysoywm" path="res://scripts/shield/shield.gd" id="1_ohv3a"]
+[ext_resource type="Texture2D" uid="uid://dja8bhejsb4lv" path="res://assets/shield/fireShield.png" id="2_e3gf5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4imvi"]
 size = Vector2(4, 22)
