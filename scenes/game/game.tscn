@@ -191,3 +191,6 @@ position = Vector2(-1, -323)
 spawn_path = NodePath("..")
 script = ExtResource("3_kelw5")
 network_player = ExtResource("4_kelw5")
+
+[node name="Player" parent="." unique_id=977688262 instance=ExtResource("4_kelw5")]
+position = Vector2(4, -31)
