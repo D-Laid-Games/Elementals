@@ -1,3 +1,4 @@
+class_name Player
 extends CharacterBody2D
 
 # movement
@@ -40,7 +41,6 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	add_to_group("Player")
 	current_sprite = earth_sprite
 	current_sprite.visible = true;
 	fire_sprite.visible = false

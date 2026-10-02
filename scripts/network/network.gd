@@ -8,7 +8,6 @@ var in_session: bool = false
 var PORT: int = 42069
 var IP_Address: String = "localhost"
 
-
 func start_server() -> void:
 	enet_peer = ENetMultiplayerPeer.new()
 	if enet_peer.create_server(PORT) != OK:
@@ -65,7 +64,17 @@ func add_player(peer_id: int) -> void:
 		return
 	var new_player: CharacterBody2D = PLAYER.instantiate()
 	new_player.name = str(peer_id)
+	new_player.position = get_spawn_position(peer_id)
 	scene.add_child(new_player, true)
+	
+	
+func get_spawn_position(peer_id: int) -> Vector2:
+	var spawn_points: Array[Node] = get_tree().get_nodes_in_group("SpawnPoint")
+	if spawn_points.is_empty():
+		return Vector2.ZERO
+	spawn_points.sort_custom(func(a:Node, b:Node) -> bool: return a.name < b.name)	
+	var point: Node2D = spawn_points[peer_id % spawn_points.size()]
+	return point.global_position
 
 
 func remove_player(peer_id: int) -> void:
