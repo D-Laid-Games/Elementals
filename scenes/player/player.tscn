@@ -542,22 +542,16 @@ bg_color = Color(0.2520276, 0.25202766, 0.25202754, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4imvi"]
 bg_color = Color(0.9882353, 0, 0.11372549, 1)
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qhqgy"]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_lvxji"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:current_element")
+properties/1/path = NodePath(".:facing_right")
 properties/1/spawn = true
 properties/1/replication_mode = 2
-properties/2/path = NodePath(".:facing_left")
+properties/2/path = NodePath(".:state")
 properties/2/spawn = true
 properties/2/replication_mode = 2
-properties/3/path = NodePath(".:shield_rotation")
-properties/3/spawn = true
-properties/3/replication_mode = 2
-properties/4/path = NodePath(".:is_shielding")
-properties/4/spawn = true
-properties/4/replication_mode = 2
 
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
 position = Vector2(22, -46)
@@ -569,16 +563,19 @@ position = Vector2(0, 7)
 shape = SubResource("CircleShape2D_ndusb")
 
 [node name="WaterAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1734551779]
+visible = false
 sprite_frames = SubResource("SpriteFrames_4imvi")
 animation = &"take_damage"
 autoplay = "idle"
 
 [node name="FireAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1310097832]
+visible = false
 sprite_frames = SubResource("SpriteFrames_g2els")
 animation = &"idle"
 autoplay = "idle"
 
 [node name="EarthAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1001628689]
+visible = false
 sprite_frames = SubResource("SpriteFrames_cywih")
 animation = &"idle"
 autoplay = "idle"
@@ -594,5 +591,5 @@ max_value = 10.0
 value = 5.0
 show_percentage = false
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=381843364]
-replication_config = SubResource("SceneReplicationConfig_qhqgy")
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1967334134]
+replication_config = SubResource("SceneReplicationConfig_lvxji")

@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Elementals"
-run/main_scene="uid://dxvksof0fy6mi"
+run/main_scene="uid://boklt2yf5yi12"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 NetworkHandler="*uid://c011iqi4r3vct"
+Network="*uid://b410m42nsuuq8"
 
 [debug]
 
