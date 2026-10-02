@@ -45,8 +45,8 @@ func _ready() -> void:
 	current_sprite.visible = true;
 	fire_sprite.visible = false
 	water_sprite.visible = false
-	
-	
+
+
 func _physics_process(delta: float) -> void:
 	#sprite_flip()
 	if not is_multiplayer_authority():
