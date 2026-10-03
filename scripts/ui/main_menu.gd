@@ -4,7 +4,6 @@ extends CanvasLayer
 @onready var button_join: Button = %ButtonJoin
 @onready var button_quit: Button = %ButtonQuit
 
-const PLAYER: PackedScene = preload("uid://dsitnylb8wxef")
 const GAME: PackedScene = preload("uid://dxvksof0fy6mi")
 
 func _ready() -> void:
@@ -34,6 +33,7 @@ func on_join() -> void:
 	add_game()
 	Network.join_server()
 	hide()
+	
 	
 func on_quit() -> void:
 	if Network.in_session:
