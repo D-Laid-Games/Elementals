@@ -554,7 +554,6 @@ properties/2/spawn = true
 properties/2/replication_mode = 2
 
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
-position = Vector2(22, -46)
 collision_layer = 2
 script = ExtResource("1_lvxji")
 

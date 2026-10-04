@@ -4,10 +4,9 @@ extends CanvasLayer
 @onready var button_join: Button = %ButtonJoin
 @onready var button_quit: Button = %ButtonQuit
 
-const GAME: PackedScene = preload("uid://dxvksof0fy6mi")
+@export var game: PackedScene
 
 func _ready() -> void:
-	process_mode = PROCESS_MODE_ALWAYS
 	button_host.pressed.connect(on_host)
 	button_join.pressed.connect(on_join)
 	button_quit.pressed.connect(on_quit)
@@ -18,22 +17,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		if not visible:
 			show()
 			get_viewport().set_input_as_handled()
-		elif visible and get_tree().current_scene.has_node("Game"): 
+		elif visible == true:
 			hide()
 			get_viewport().set_input_as_handled()
 	
 	
 func on_host() -> void:
-	add_game()
-	Network.start_server()
-	hide()
+	if !Network.in_session:
+		_add_game()
+		Network.start_server()
+		hide()
 	
 	
 func on_join() -> void:
-	add_game()
+	_add_game()
 	Network.join_server()
 	hide()
-	
 	
 func on_quit() -> void:
 	if Network.in_session:
@@ -43,7 +42,7 @@ func on_quit() -> void:
 		get_tree().quit() 
 	
 
-func add_game() -> void:
-	var new_game: Node2D = GAME.instantiate()
+func _add_game() -> void:
+	var new_game: Node2D = game.instantiate()
 	get_tree().current_scene.add_child(new_game)
 	

@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var players: Node2D = $Players
 @onready var spawner: MultiplayerSpawner = $MultiplayerSpawner
+@export var player_scene: PackedScene
 var next_slot: int = 0
 
 
@@ -12,15 +13,17 @@ func _ready() -> void:
 func spawn_player(peer_id: int) -> void:
 	if players.has_node(str(peer_id)):
 		return
-	var points: Array[Node] = get_tree().get_nodes_in_group("SpawnPoint")
-	points.sort_custom(func(a: Node, b: Node) -> bool: return a.name < b.name)
-	var point: Node2D = points[next_slot % points.size()] as Node2D
+	var spawn_points: Array[Node] = get_tree().get_nodes_in_group("SpawnPoint")
+	# sort the spawn points alphabetically so they match across all the clients.
+	spawn_points.sort_custom(func(a: Node, b: Node) -> bool: return a.name < b.name)
+	# assigning players to the next available spawn point.
+	var point: Node2D = spawn_points[next_slot % spawn_points.size()] as Node2D
 	next_slot += 1
 	spawner.spawn({"id": peer_id, "pos": point.global_position})
 
 
 func _spawn_player(data: Dictionary) -> Node:
-	var player: CharacterBody2D = preload("uid://dsitnylb8wxef").instantiate()
+	var player: CharacterBody2D = player_scene.instantiate()
 	player.name = str(data["id"])
 	player.position = data["pos"]
 	return player

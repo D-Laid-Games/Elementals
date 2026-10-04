@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://d0rj2vltd3j5b"]
 
 [ext_resource type="Script" uid="uid://cc3dabiba8n3d" path="res://scripts/ui/main_menu.gd" id="1_sl1te"]
+[ext_resource type="PackedScene" uid="uid://dxvksof0fy6mi" path="res://scenes/game/game.tscn" id="2_fe2o3"]
 
 [node name="MainMenu" type="CanvasLayer" unique_id=2089190543]
 script = ExtResource("1_sl1te")
+game = ExtResource("2_fe2o3")
 
 [node name="Control" type="Control" parent="." unique_id=2095271054]
 layout_mode = 3
