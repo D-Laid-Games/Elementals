@@ -1,10 +1,12 @@
 extends CanvasLayer
 
+
 @onready var button_host: Button = %ButtonHost
 @onready var button_join: Button = %ButtonJoin
 @onready var button_quit: Button = %ButtonQuit
 
 @export var game: PackedScene
+
 
 func _ready() -> void:
 	button_host.pressed.connect(on_host)
@@ -33,6 +35,7 @@ func on_join() -> void:
 	_add_game()
 	Network.join_server()
 	hide()
+	
 	
 func on_quit() -> void:
 	if Network.in_session:

@@ -1,5 +1,6 @@
 extends Node
 
+
 var enet_peer: ENetMultiplayerPeer
 var in_session: bool = false
 var is_host: bool = false

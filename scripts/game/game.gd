@@ -1,9 +1,11 @@
 extends Node2D
 
+
 @onready var players: Node2D = $Players
 @onready var spawner: MultiplayerSpawner = $MultiplayerSpawner
 @export var player_scene: PackedScene
 var next_slot: int = 0
+@export var respawn_time: float = 3.0
 
 
 func _ready() -> void:
@@ -27,3 +29,17 @@ func _spawn_player(data: Dictionary) -> Node:
 	player.name = str(data["id"])
 	player.position = data["pos"]
 	return player
+	
+	
+func respawn_player(peer_id: int) -> void:
+	await get_tree().create_timer(respawn_time).timeout
+	var player: Node = players.get_node_or_null(str(peer_id))
+	if player == null:
+		return
+	player.respawn.rpc(_get_random_spawn_position())
+	
+
+func _get_random_spawn_position() -> Vector2:
+	var spawn_points: Array[Node] = get_tree().get_nodes_in_group("SpawnPoint")
+	var point: Node2D = spawn_points.pick_random() as Node2D
+	return point.global_position
