@@ -43,3 +43,10 @@ func _get_random_spawn_position() -> Vector2:
 	var spawn_points: Array[Node] = get_tree().get_nodes_in_group("SpawnPoint")
 	var point: Node2D = spawn_points.pick_random() as Node2D
 	return point.global_position
+	
+	
+@rpc("authority", "call_local", "reliable")
+func remove_projectile(proj_name: StringName) -> void:
+	var projectile: Node = get_tree().current_scene.get_node_or_null(NodePath(proj_name))
+	if projectile != null:
+		projectile.queue_free()

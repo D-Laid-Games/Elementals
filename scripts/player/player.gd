@@ -42,6 +42,20 @@ var can_shoot: bool = true
 var fire_rate: float = 1.0
 var projectile_offset: float = 35.0
 
+# shielding
+var shield: Area2D
+@export var shield_offset: Vector2 = Vector2(20.0, 0.0)
+@export var shield_scene: PackedScene
+
+@export var is_shielding: bool = false:
+	set(value):
+		is_shielding = value
+		_apply_shield_state()
+
+@export var shield_rotation: float = 0.0:
+	set(value):
+		shield_rotation = value
+		_apply_shield_state()
 
 # health
 const MAX_HEALTH: float = 100.0
@@ -71,6 +85,7 @@ func _ready() -> void:
 	current_sprite.visible = true
 	fire_sprite.visible = false
 	water_sprite.visible = false
+	_setup_shield()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -91,6 +106,11 @@ func _physics_process(delta: float) -> void:
 	jump()
 	update_state()
 	move_and_slide()
+	
+	is_shielding = Input.is_action_pressed("shield")
+	var mouse_dir: Vector2 = (get_global_mouse_position() - global_position).normalized()
+	shield_rotation = mouse_dir.angle()
+
 	
 	
 func update_state() -> void:
@@ -137,7 +157,7 @@ func player_gravity(delta: float) -> void:
 		jumps_left = max_jumps
 
 
-@rpc("call_local")		
+@rpc("call_local", "reliable")		
 func shoot(direction: Vector2, shooter_peer_id: int) -> void:
 	if not can_shoot:
 		return
@@ -154,12 +174,27 @@ func _spawn_projectile(direction: Vector2, shooter_peer_id: int) -> void:
 	await get_tree().create_timer(fire_rate).timeout
 	can_shoot = true
 	
+func _setup_shield() -> void:
+	shield = shield_scene.instantiate()
+	add_child(shield)
+	_apply_shield_state()
+	
+	
+func _apply_shield_state() -> void:
+	if shield == null:
+		return
+	shield.visible = is_shielding
+	shield.rotation = shield_rotation
+	shield.position = Vector2.RIGHT.rotated(shield_rotation) * shield_offset.length()
+	shield.set_deferred("monitorable", is_shielding)
+	shield.set_deferred("monitoring", false)
+	
 	
 func get_game() -> Node:
 	return get_tree().current_scene.get_node("Game")
 	
 	
-@rpc("any_peer", "call_local")	
+@rpc("any_peer", "call_local", "reliable")	
 func take_damage(amount: float) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
 	if sender !=0 and sender !=1:
