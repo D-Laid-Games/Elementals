@@ -35,6 +35,13 @@ var current_sprite: AnimatedSprite2D = null
 @onready var fire_sprite: AnimatedSprite2D = $FireAnimatedSprite2D
 @onready var water_sprite: AnimatedSprite2D = $WaterAnimatedSprite2D
 
+enum Element { FIRE, WATER, EARTH }
+@export var current_element: Element = Element.FIRE:
+	set(value):
+		current_element = value
+		if is_node_ready():
+			_update_element_visuals()
+
 
 # projectile shooting
 @export var projectile_scene: PackedScene
@@ -81,20 +88,25 @@ func _ready() -> void:
 	default_collision_layer = collision_layer
 	health_bar.max_value = MAX_HEALTH
 	health_bar.value =current_health
-	current_sprite = earth_sprite
-	current_sprite.visible = true
-	fire_sprite.visible = false
-	water_sprite.visible = false
+	_update_element_visuals()
 	_setup_shield()
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority() or is_dead:
 		return
+	
+	if event.is_action_pressed("fire_stance"):
+		current_element = Element.FIRE
+	elif event.is_action_pressed("water_stance"):
+		current_element = Element.WATER
+	elif event.is_action_pressed("earth_stance"):
+		current_element = Element.EARTH
+		
 	if event.is_action_pressed("shoot"):
 		var mouse_position: Vector2 = get_global_mouse_position()
 		var direction: Vector2 = (mouse_position - global_position).normalized()
-		shoot.rpc(direction, multiplayer.get_unique_id())
+		shoot.rpc(direction, multiplayer.get_unique_id(), current_element)
 
 
 func _physics_process(delta: float) -> void:
@@ -158,19 +170,19 @@ func player_gravity(delta: float) -> void:
 
 
 @rpc("call_local", "reliable")		
-func shoot(direction: Vector2, shooter_peer_id: int) -> void:
+func shoot(direction: Vector2, shooter_peer_id: int, element: int) -> void:
 	if not can_shoot:
 		return
-	_spawn_projectile(direction, shooter_peer_id)
+	_spawn_projectile(direction, shooter_peer_id, element)
 
 	
-func _spawn_projectile(direction: Vector2, shooter_peer_id: int) -> void:
+func _spawn_projectile(direction: Vector2, shooter_peer_id: int, element: int) -> void:
 	can_shoot = false
 	var projectile: Node2D = projectile_scene.instantiate()
 	projectile.set_multiplayer_authority(shooter_peer_id)
 	get_tree().current_scene.add_child(projectile, true)
 	var spawn_pos: Vector2 = global_position + (direction * projectile_offset)
-	projectile.setup(direction, spawn_pos)
+	projectile.setup(direction, spawn_pos, element)
 	await get_tree().create_timer(fire_rate).timeout
 	can_shoot = true
 	
@@ -237,3 +249,16 @@ func respawn(spawn_position: Vector2) -> void:
 	collision_layer = default_collision_layer
 	current_sprite.visible = true
 	is_dead = false
+	
+func _update_element_visuals() -> void:
+	if fire_sprite: fire_sprite.visible = false
+	if water_sprite: water_sprite.visible = false
+	if earth_sprite: earth_sprite.visible = false
+	match current_element:
+		Element.FIRE: current_sprite = fire_sprite
+		Element.WATER: current_sprite = water_sprite
+		Element.EARTH: current_sprite = earth_sprite
+	if current_sprite:
+		current_sprite.visible = true
+		current_sprite.flip_h = not facing_right
+		current_sprite.play(ANIMATIONS[state]) 

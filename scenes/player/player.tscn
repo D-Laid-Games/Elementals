@@ -563,6 +563,9 @@ properties/4/replication_mode = 2
 properties/5/path = NodePath(".:is_shielding")
 properties/5/spawn = true
 properties/5/replication_mode = 2
+properties/6/path = NodePath(".:current_element")
+properties/6/spawn = true
+properties/6/replication_mode = 2
 
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
 collision_layer = 2
