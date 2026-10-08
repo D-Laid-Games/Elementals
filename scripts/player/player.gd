@@ -17,6 +17,7 @@ const ANIMATIONS: Dictionary = {
 	PlayerAnimationState.RUN: "run",
 	PlayerAnimationState.JUMP: "jump",
 }
+
 @export var facing_right: bool = true:
 	set(value):
 		facing_right = value
@@ -49,7 +50,8 @@ enum Element { FIRE, WATER, EARTH }
 @export var projectile_scene: PackedScene
 var can_shoot: bool = true
 var fire_rate: float = 1.0
-var projectile_offset: float = 35.0
+var projectile_offset: float = 25.0
+var shot_counter: int = 0
 
 # shielding
 var shield: Area2D
@@ -65,7 +67,6 @@ var shield: Area2D
 	set(value):
 		shield_rotation = value
 		_apply_shield_state()
-		
 
 # health
 const MAX_HEALTH: float = 100.0
@@ -113,7 +114,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	#sprite_flip()
 	if not is_multiplayer_authority() or is_dead:
 		return
 	player_gravity(delta)
@@ -127,7 +127,7 @@ func _physics_process(delta: float) -> void:
 	shield_rotation = mouse_dir.angle()
 
 	
-	
+
 func update_state() -> void:
 	if not is_on_floor():
 		state = PlayerAnimationState.JUMP
@@ -182,6 +182,8 @@ func shoot(direction: Vector2, shooter_peer_id: int, element: int) -> void:
 func _spawn_projectile(direction: Vector2, shooter_peer_id: int, element: int) -> void:
 	can_shoot = false
 	var projectile: Area2D = projectile_scene.instantiate()
+	shot_counter += 1
+	projectile.name = "Proj_%d_%d" % [shooter_peer_id, shot_counter]
 	projectile.set_multiplayer_authority(shooter_peer_id)
 	get_tree().current_scene.add_child(projectile, true)
 	var spawn_pos: Vector2 = global_position + (direction * projectile_offset)
@@ -204,15 +206,11 @@ func _apply_shield_state() -> void:
 	shield.position = Vector2.RIGHT.rotated(shield_rotation) * shield_offset.length()
 	shield.set_deferred("monitorable", is_shielding)
 	shield.set_deferred("monitoring", false)
-	
-	
+
+
 func _update_shield_element() -> void:
 	if shield != null:
-		shield.update_shield_texture(current_element)
-	
-	
-func get_game() -> Node:
-	return get_tree().current_scene.get_node("Game")
+		shield.update_shield_texture()
 	
 	
 @rpc("any_peer", "call_local", "reliable")	
@@ -277,3 +275,5 @@ func _update_element_visuals() -> void:
 func get_element() -> int:
 	return current_element 
 	
+func get_game() -> Node:
+	return get_tree().current_scene.get_node("Game")

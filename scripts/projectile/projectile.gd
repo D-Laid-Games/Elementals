@@ -1,5 +1,4 @@
 extends Area2D
-class_name Projectile
 
 @export var speed: float = 800.0
 @export var projectile_gravity: float = 1000.0
@@ -7,7 +6,7 @@ var velocity: Vector2 = Vector2.ZERO
 @export var damage: float = 25.0
 
 enum Element { FIRE, WATER, EARTH }
-var player_element: int = Element.FIRE
+var player_element: int
 
 const TEXTURES: Array[Texture2D] = [
 	preload("res://assets/projectile/fireBall.png"),
@@ -31,33 +30,28 @@ func _physics_process(delta: float) -> void:
 	rotation = velocity.angle()
 	
 	
-func _update_projectile_texture(elem: int) -> void:
-	if elem >=0 and elem < TEXTURES.size():
-		projectile_sprite.texture = TEXTURES[elem]
+func _update_projectile_texture(element: int) -> void:
+	if element >=0 and element < TEXTURES.size():
+		projectile_sprite.texture = TEXTURES[element]
 		
 
 		
 func _on_body_entered(body: Node2D) -> void:
-	if not is_multiplayer_authority():
+	if not multiplayer.is_server():
 		return
 	if body is Player:
-		var target_player: Player = body as Player
-		target_player.take_damage.rpc_id(target_player.get_multiplayer_authority(), damage)
-		_remove()
-		return
-	if body is TileMapLayer or body is TileMap or body is StaticBody2D:
-		_remove()
+		body.take_damage.rpc_id(body.get_multiplayer_authority(), damage)
+	_remove()
+
 		
-
-
 func _on_area_entered(area: Area2D) -> void:
 	if not multiplayer.is_server():
 		return
 	if area is Shield:
 		var shield: Shield = area
-		if shield.is_active():
+		if shield.get_is_shielding():
 			var target_player: Player = shield.player
-			var shield_element: int = shield.get_element()
+			var shield_element: int = shield.get_current_shield_element()
 			if is_element_blocked(shield_element, player_element):
 				target_player.take_damage.rpc_id(target_player.get_multiplayer_authority(), 0.0)
 			elif is_element_double_damage(shield_element, player_element):

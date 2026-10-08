@@ -45,7 +45,7 @@ func _get_random_spawn_position() -> Vector2:
 	return point.global_position
 	
 	
-@rpc("any_peer", "call_local", "reliable")
+@rpc("authority", "call_local", "reliable")
 func remove_projectile(proj_name: StringName) -> void:
 	var projectile: Area2D = get_tree().current_scene.get_node_or_null(NodePath(proj_name))
 	if projectile != null:
