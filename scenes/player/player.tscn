@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dsitnylb8wxef"]
 
 [ext_resource type="Script" uid="uid://bqnfk262be4n6" path="res://scripts/player/player.gd" id="1_lvxji"]
-[ext_resource type="PackedScene" uid="uid://b503inpuib36y" path="res://scenes/projectile/projectile.tscn" id="2_75vfm"]
+[ext_resource type="PackedScene" uid="uid://dbv8u1d2fnnsn" path="res://scenes/projectile/projectile.tscn" id="2_75vfm"]
 [ext_resource type="Texture2D" uid="uid://bgrf8a5jonlsa" path="res://assets/player/knightBlue.png" id="2_p47bc"]
 [ext_resource type="PackedScene" uid="uid://bk4j44n3h0glc" path="res://scenes/shield/shield.tscn" id="3_0owmy"]
 [ext_resource type="Texture2D" uid="uid://cl42pacjd1agx" path="res://assets/player/knightOrange.png" id="3_75vfm"]

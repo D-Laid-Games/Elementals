@@ -1,60 +1,28 @@
 extends Area2D
+class_name Shield
 
-#enum Element { FIRE, WATER, EARTH }
-#
-#@export var base_damage: float = 5.0
-#@onready var player: CharacterBody2D = get_parent() as CharacterBody2D
-#
-#func _ready() -> void:
-	#area_entered.connect(_on_area_entered)
-#
-#func _on_area_entered(area: Area2D) -> void:
-	#if not multiplayer.is_server():
-		#return
-		#
-	## Retrieve the root projectile node
-	#var projectile: Node2D = area.get_parent() as Node2D
-	#if not projectile:
-		#projectile = area
-		#
-	## Ensure the object has an elemental variable to read
-	#if not "element" in projectile or not player:
-		#return
-#
-	#var incoming_element: int = projectile.element
-	#var shield_element: int = player.current_element
-#
-	## Check counter matrix using the helper function
-	#if is_element_blocked(shield_element, incoming_element):
-		#projectile.queue_free()
-		#return
-		#
-	#if is_element_double_damage(shield_element, incoming_element):
-		#player.take_damage(base_damage * 2)
-		#projectile.queue_free()
-		#return
-	#
-	#player.take_damage(base_damage)
-	#projectile.queue_free()
-			#
-#func is_element_blocked(shield_elem: int, proj_elem: int) -> bool:
-	#match shield_elem:
-		#Element.WATER:
-			#return proj_elem == Element.FIRE
-		#Element.EARTH:
-			#return proj_elem == Element.WATER
-		#Element.FIRE:
-			#return proj_elem == Element.EARTH
-	#return false
-	#
-#func is_element_double_damage(shield_elem: int, proj_elem: int) -> bool:
-	#match shield_elem:
-		#Element.WATER:
-			#return proj_elem == Element.WATER
-		#Element.EARTH:
-			#return proj_elem == Element.EARTH
-		#Element.FIRE:
-			#return proj_elem == Element.FIRE
-	#return false
-		#
-		
+@onready var player: CharacterBody2D = get_parent() as CharacterBody2D
+
+var current_element: int
+
+const TEXTURES: Array[Texture2D] = [
+	preload("res://assets/shield/fireShield.png"),
+	preload("res://assets/shield/waterShield.png"),
+	preload("res://assets/shield/earthShield.png"),
+]
+
+@onready var shield_sprite: Sprite2D = $Shield 
+
+
+func update_shield_texture(element: int) -> void:
+	current_element = element
+	if element >= 0 and element < TEXTURES.size():
+		shield_sprite.texture = TEXTURES[element]
+	
+	
+func get_element() -> int:
+	#return player.current_element
+	return current_element
+
+func is_active() -> bool:
+	return player.is_shielding

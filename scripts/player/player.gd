@@ -1,4 +1,5 @@
 extends CharacterBody2D
+class_name Player
 
 # movement
 const SPEED: float = 130.0
@@ -41,6 +42,7 @@ enum Element { FIRE, WATER, EARTH }
 		current_element = value
 		if is_node_ready():
 			_update_element_visuals()
+			_update_shield_element()
 
 
 # projectile shooting
@@ -63,6 +65,7 @@ var shield: Area2D
 	set(value):
 		shield_rotation = value
 		_apply_shield_state()
+		
 
 # health
 const MAX_HEALTH: float = 100.0
@@ -178,7 +181,7 @@ func shoot(direction: Vector2, shooter_peer_id: int, element: int) -> void:
 	
 func _spawn_projectile(direction: Vector2, shooter_peer_id: int, element: int) -> void:
 	can_shoot = false
-	var projectile: Node2D = projectile_scene.instantiate()
+	var projectile: Area2D = projectile_scene.instantiate()
 	projectile.set_multiplayer_authority(shooter_peer_id)
 	get_tree().current_scene.add_child(projectile, true)
 	var spawn_pos: Vector2 = global_position + (direction * projectile_offset)
@@ -190,6 +193,7 @@ func _setup_shield() -> void:
 	shield = shield_scene.instantiate()
 	add_child(shield)
 	_apply_shield_state()
+	_update_shield_element()
 	
 	
 func _apply_shield_state() -> void:
@@ -200,6 +204,11 @@ func _apply_shield_state() -> void:
 	shield.position = Vector2.RIGHT.rotated(shield_rotation) * shield_offset.length()
 	shield.set_deferred("monitorable", is_shielding)
 	shield.set_deferred("monitoring", false)
+	
+	
+func _update_shield_element() -> void:
+	if shield != null:
+		shield.update_shield_texture(current_element)
 	
 	
 func get_game() -> Node:
@@ -231,6 +240,7 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	current_sprite.visible = false
 	health_bar.visible = false
+	shield.visible = false
 	set_deferred("collision_layer", 0)
 	if multiplayer.is_server():
 		get_game().respawn_player(name.to_int())
@@ -262,3 +272,8 @@ func _update_element_visuals() -> void:
 		current_sprite.visible = true
 		current_sprite.flip_h = not facing_right
 		current_sprite.play(ANIMATIONS[state]) 
+		
+		
+func get_element() -> int:
+	return current_element 
+	
