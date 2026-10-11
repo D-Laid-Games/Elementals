@@ -44,4 +44,3 @@ func _get_random_spawn_position() -> Vector2:
 	var point: Node2D = spawn_points.pick_random() as Node2D
 	return point.global_position
 	
-	

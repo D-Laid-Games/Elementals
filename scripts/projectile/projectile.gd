@@ -1,5 +1,6 @@
 extends Area2D
 
+
 @export var speed: float = 800.0
 @export var projectile_gravity: float = 1000.0
 var velocity: Vector2 = Vector2.ZERO
@@ -61,16 +62,16 @@ func _on_area_entered(area: Area2D) -> void:
 		return  
 	if multiplayer.is_server():
 		var shield_element: int = shield.get_current_shield_element()
-		if is_element_blocked(shield_element, player_element):
+		if _is_element_blocked(shield_element, player_element):
 			pass  # fully blocked, no damage
-		elif is_element_double_damage(shield_element, player_element):
+		elif _is_element_double_damage(shield_element, player_element):
 			target.apply_damage(damage * 2.0)
 		else:
 			target.apply_damage(damage)
 	_remove()
 
 				
-func is_element_blocked(shield_element: int, projectile_element: int) -> bool:
+func _is_element_blocked(shield_element: int, projectile_element: int) -> bool:
 	match shield_element:
 		Enums.Element.WATER: return projectile_element == Enums.Element.FIRE
 		Enums.Element.EARTH: return projectile_element == Enums.Element.WATER
@@ -78,7 +79,7 @@ func is_element_blocked(shield_element: int, projectile_element: int) -> bool:
 	return false
 	
 	
-func is_element_double_damage(shield_element: int, projectile_element: int) -> bool:
+func _is_element_double_damage(shield_element: int, projectile_element: int) -> bool:
 	return shield_element == projectile_element
 	
 	

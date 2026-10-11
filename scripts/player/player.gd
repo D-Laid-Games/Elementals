@@ -118,10 +118,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority() or is_dead:
 		return
-	player_gravity(delta)
-	movement()
-	jump()
-	update_state()
+	_player_gravity(delta)
+	_movement()
+	_jump()
+	_update_state()
 	move_and_slide()
 	
 	is_shielding = Input.is_action_pressed("shield")
@@ -130,7 +130,7 @@ func _physics_process(delta: float) -> void:
 
 	
 
-func update_state() -> void:
+func _update_state() -> void:
 	if not is_on_floor():
 		state = Enums.PlayerAnimationState.JUMP
 	elif velocity.x == 0.0:
@@ -146,7 +146,7 @@ func _update_player_visuals() -> void:
 	current_sprite.play(ANIMATIONS[state])
 
 
-func movement() -> void:
+func _movement() -> void:
 	var direction: float = Input.get_axis("move_left", "move_right")
 	# facing
 	if direction > 0:
@@ -161,13 +161,13 @@ func movement() -> void:
 		velocity.x = move_toward(velocity.x, 0.0, SPEED)
 	
 	
-func jump() -> void:
+func _jump() -> void:
 	if Input.is_action_just_pressed("jump") and jumps_left > 0:
 		velocity.y = Jump_VELOCITY
 		jumps_left -= 1
 
 
-func player_gravity(delta: float) -> void:
+func _player_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	else:
@@ -275,6 +275,7 @@ func _update_element_visuals() -> void:
 		
 func get_element() -> int:
 	return current_element 
+	
 	
 func get_game() -> Node:
 	return get_tree().current_scene.get_node("Game")
