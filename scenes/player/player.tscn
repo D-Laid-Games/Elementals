@@ -554,18 +554,15 @@ properties/1/replication_mode = 2
 properties/2/path = NodePath(".:state")
 properties/2/spawn = true
 properties/2/replication_mode = 2
-properties/3/path = NodePath(".:current_health")
+properties/3/path = NodePath(".:shield_rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 2
-properties/4/path = NodePath(".:shield_rotation")
+properties/4/path = NodePath(".:is_shielding")
 properties/4/spawn = true
 properties/4/replication_mode = 2
-properties/5/path = NodePath(".:is_shielding")
+properties/5/path = NodePath(".:current_element")
 properties/5/spawn = true
 properties/5/replication_mode = 2
-properties/6/path = NodePath(".:current_element")
-properties/6/spawn = true
-properties/6/replication_mode = 2
 
 [node name="Player" type="CharacterBody2D" unique_id=977688262]
 collision_layer = 2

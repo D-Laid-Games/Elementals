@@ -107,10 +107,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("earth_stance"):
 		current_element = Element.EARTH
 		
-	if event.is_action_pressed("shoot"):
-		var mouse_position: Vector2 = get_global_mouse_position()
-		var direction: Vector2 = (mouse_position - global_position).normalized()
-		shoot.rpc(direction, multiplayer.get_unique_id(), current_element)
+	if event.is_action_pressed("shoot") and can_shoot == true:
+		can_shoot = false
+		var direction: Vector2 = (get_global_mouse_position() - global_position).normalized()
+		var spawn_position: Vector2 = global_position + direction * projectile_offset
+		shoot.rpc(spawn_position, direction, current_element)
+		await get_tree().create_timer(fire_rate).timeout
+		can_shoot = true
+		
 
 
 func _physics_process(delta: float) -> void:
@@ -172,24 +176,15 @@ func player_gravity(delta: float) -> void:
 		jumps_left = max_jumps
 
 
-@rpc("call_local", "reliable")		
-func shoot(direction: Vector2, shooter_peer_id: int, element: int) -> void:
-	if not can_shoot:
-		return
-	_spawn_projectile(direction, shooter_peer_id, element)
-
-	
-func _spawn_projectile(direction: Vector2, shooter_peer_id: int, element: int) -> void:
-	can_shoot = false
-	var projectile: Area2D = projectile_scene.instantiate()
+@rpc("authority", "call_local", "reliable")
+func shoot(spawn_position: Vector2, direction: Vector2, element: int) -> void:
 	shot_counter += 1
-	projectile.name = "Proj_%d_%d" % [shooter_peer_id, shot_counter]
-	projectile.set_multiplayer_authority(shooter_peer_id)
-	get_tree().current_scene.add_child(projectile, true)
-	var spawn_pos: Vector2 = global_position + (direction * projectile_offset)
-	projectile.setup(direction, spawn_pos, element)
-	await get_tree().create_timer(fire_rate).timeout
-	can_shoot = true
+	var shooter_id: int = get_multiplayer_authority()
+	var projectile: Area2D = projectile_scene.instantiate()
+	projectile.name = "Proj_%d_%d" % [shooter_id, shot_counter]
+	get_tree().current_scene.add_child(projectile)
+	projectile.setup(direction, spawn_position, element, shooter_id)
+	
 	
 func _setup_shield() -> void:
 	shield = shield_scene.instantiate()
@@ -212,17 +207,27 @@ func _update_shield_element() -> void:
 	if shield != null:
 		shield.update_shield_texture()
 	
-	
-@rpc("any_peer", "call_local", "reliable")	
-func take_damage(amount: float) -> void:
-	var sender: int = multiplayer.get_remote_sender_id()
-	if sender !=0 and sender !=1:
+
+func apply_damage(amount: float) -> void:
+	if not multiplayer.is_server() or is_dead:
 		return
-	if is_dead:
-		return
-	current_health = max(current_health - amount, 0.0)
-	if current_health <= 0.0:
+	var new_health: float = maxf(current_health - amount, 0.0)
+	set_health.rpc(new_health)
+	if new_health <= 0.0:
 		die.rpc()
+		get_game().respawn_player(name.to_int())
+
+
+func _is_from_server() -> bool:
+	var sender: int = multiplayer.get_remote_sender_id()
+	return sender == 0 or sender == 1
+
+
+@rpc("any_peer", "call_local", "reliable")
+func set_health(value: float) -> void:
+	if not _is_from_server():
+		return
+	current_health = value
 
 
 func _update_health_bar() -> void:
@@ -230,9 +235,9 @@ func _update_health_bar() -> void:
 		health_bar.value = current_health
 		
 		
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func die() -> void:
-	if is_dead:
+	if not _is_from_server() or is_dead:
 		return
 	is_dead = true
 	velocity = Vector2.ZERO
@@ -240,14 +245,11 @@ func die() -> void:
 	health_bar.visible = false
 	shield.visible = false
 	set_deferred("collision_layer", 0)
-	if multiplayer.is_server():
-		get_game().respawn_player(name.to_int())
 		
 		
 @rpc("any_peer", "call_local", "reliable")
 func respawn(spawn_position: Vector2) -> void:
-	var sender: int = multiplayer.get_remote_sender_id()
-	if sender != 0 and sender != 1:
+	if not _is_from_server():
 		return
 	global_position = spawn_position
 	velocity = Vector2.ZERO
@@ -257,6 +259,7 @@ func respawn(spawn_position: Vector2) -> void:
 	collision_layer = default_collision_layer
 	current_sprite.visible = true
 	is_dead = false
+	
 	
 func _update_element_visuals() -> void:
 	if fire_sprite: fire_sprite.visible = false
