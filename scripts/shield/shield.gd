@@ -17,8 +17,10 @@ func update_shield_texture() -> void:
 	if element >= 0 and element < TEXTURES.size():
 		shield_sprite.texture = TEXTURES[element]
 	
+	
 func get_current_shield_element() -> int:
 	return player.current_element
+
 
 func get_is_shielding() -> bool:
 	return player.is_shielding

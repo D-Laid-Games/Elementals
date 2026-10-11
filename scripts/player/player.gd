@@ -10,12 +10,10 @@ var jumps_left: int = 1
 const Jump_VELOCITY: float = -300.0
 
 # player sprite
-enum PlayerAnimationState { IDLE, RUN, JUMP }
-
 const ANIMATIONS: Dictionary = {
-	PlayerAnimationState.IDLE: "idle",
-	PlayerAnimationState.RUN: "run",
-	PlayerAnimationState.JUMP: "jump",
+	Enums.PlayerAnimationState.IDLE: "idle",
+	Enums.PlayerAnimationState.RUN: "run",
+	Enums.PlayerAnimationState.JUMP: "jump",
 }
 
 @export var facing_right: bool = true:
@@ -24,7 +22,7 @@ const ANIMATIONS: Dictionary = {
 		if current_sprite:
 			current_sprite.flip_h = not facing_right
 			
-@export var state: PlayerAnimationState = PlayerAnimationState.IDLE:
+@export var state: Enums.PlayerAnimationState = Enums.PlayerAnimationState.IDLE:
 	set(value):
 		if state == value:
 			return
@@ -37,8 +35,8 @@ var current_sprite: AnimatedSprite2D = null
 @onready var fire_sprite: AnimatedSprite2D = $FireAnimatedSprite2D
 @onready var water_sprite: AnimatedSprite2D = $WaterAnimatedSprite2D
 
-enum Element { FIRE, WATER, EARTH }
-@export var current_element: Element = Element.FIRE:
+#enum Element { FIRE, WATER, EARTH }
+@export var current_element: Enums.Element = Enums.Element.FIRE:
 	set(value):
 		current_element = value
 		if is_node_ready():
@@ -101,11 +99,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	
 	if event.is_action_pressed("fire_stance"):
-		current_element = Element.FIRE
+		current_element = Enums.Element.FIRE
 	elif event.is_action_pressed("water_stance"):
-		current_element = Element.WATER
+		current_element = Enums.Element.WATER
 	elif event.is_action_pressed("earth_stance"):
-		current_element = Element.EARTH
+		current_element = Enums.Element.EARTH
 		
 	if event.is_action_pressed("shoot") and can_shoot == true:
 		can_shoot = false
@@ -134,11 +132,11 @@ func _physics_process(delta: float) -> void:
 
 func update_state() -> void:
 	if not is_on_floor():
-		state = PlayerAnimationState.JUMP
+		state = Enums.PlayerAnimationState.JUMP
 	elif velocity.x == 0.0:
-		state = PlayerAnimationState.IDLE
+		state = Enums.PlayerAnimationState.IDLE
 	else:
-		state = PlayerAnimationState.RUN
+		state = Enums.PlayerAnimationState.RUN
 
 
 func _update_player_visuals() -> void:
@@ -266,9 +264,9 @@ func _update_element_visuals() -> void:
 	if water_sprite: water_sprite.visible = false
 	if earth_sprite: earth_sprite.visible = false
 	match current_element:
-		Element.FIRE: current_sprite = fire_sprite
-		Element.WATER: current_sprite = water_sprite
-		Element.EARTH: current_sprite = earth_sprite
+		Enums.Element.FIRE: current_sprite = fire_sprite
+		Enums.Element.WATER: current_sprite = water_sprite
+		Enums.Element.EARTH: current_sprite = earth_sprite
 	if current_sprite:
 		current_sprite.visible = true
 		current_sprite.flip_h = not facing_right

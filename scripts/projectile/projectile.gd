@@ -6,7 +6,6 @@ var velocity: Vector2 = Vector2.ZERO
 @export var damage: float = 25.0
 var shooter_id: int = 0
 var self_hit_grace: float = 0.15
-enum Element { FIRE, WATER, EARTH }
 var player_element: int
 
 const TEXTURES: Array[Texture2D] = [
@@ -60,7 +59,6 @@ func _on_area_entered(area: Area2D) -> void:
 	var target: Player = shield.player as Player
 	if _is_ignored_self_hit(target):
 		return  
-
 	if multiplayer.is_server():
 		var shield_element: int = shield.get_current_shield_element()
 		if is_element_blocked(shield_element, player_element):
@@ -71,14 +69,12 @@ func _on_area_entered(area: Area2D) -> void:
 			target.apply_damage(damage)
 	_remove()
 
-
 				
-			
 func is_element_blocked(shield_element: int, projectile_element: int) -> bool:
 	match shield_element:
-		Element.WATER: return projectile_element == Element.FIRE
-		Element.EARTH: return projectile_element == Element.WATER
-		Element.FIRE:  return projectile_element == Element.EARTH
+		Enums.Element.WATER: return projectile_element == Enums.Element.FIRE
+		Enums.Element.EARTH: return projectile_element == Enums.Element.WATER
+		Enums.Element.FIRE:  return projectile_element == Enums.Element.EARTH
 	return false
 	
 	
