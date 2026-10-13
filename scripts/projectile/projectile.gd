@@ -1,13 +1,15 @@
 extends Area2D
 
-
-@export var speed: float = 800.0
-@export var projectile_gravity: float = 1000.0
+const BASE_PROJECTILE_SPEED: float = 800.0
+const BASE_PROJECTILE_GRAVITY: float  = 1000.0
+@export var projectile_speed: float = BASE_PROJECTILE_SPEED
+@export var projectile_gravity: float = BASE_PROJECTILE_GRAVITY
 var velocity: Vector2 = Vector2.ZERO
 @export var damage: float = 25.0
 var shooter_id: int = 0
 var self_hit_grace: float = 0.15
 var player_element: int
+
 
 const TEXTURES: Array[Texture2D] = [
 	preload("res://assets/projectile/fireBall.png"),
@@ -20,7 +22,7 @@ const TEXTURES: Array[Texture2D] = [
 func setup(direction: Vector2, start_position: Vector2, p_player_element: int, p_shooter_id: int) -> void:
 	global_position = start_position
 	rotation = direction.angle()
-	velocity = direction * speed
+	velocity = direction * projectile_speed
 	player_element = p_player_element
 	shooter_id = p_shooter_id
 	_update_projectile_texture(p_player_element)
