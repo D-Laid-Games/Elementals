@@ -13,7 +13,7 @@ const TEXTURES: Array[Texture2D] = [
 
 
 func update_shield_texture() -> void:
-	var element: int  = player.current_element
+	var element: Enums.Element = player.current_element
 	if element >= 0 and element < TEXTURES.size():
 		shield_sprite.texture = TEXTURES[element]
 	
