@@ -26,6 +26,9 @@ func _update_texture() -> void:
 			2: proj_sprite.texture = preload("res://assets/projectile/earthBall.png")
 
 func _physics_process(delta: float) -> void:
+	if not multiplayer.is_server():
+		return
+	
 	# Apply gravity over time to pull the projectile down
 	velocity.y += projectile_gravity * delta
 	

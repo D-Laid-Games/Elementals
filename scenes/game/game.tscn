@@ -188,6 +188,9 @@ tile_set = SubResource("TileSet_ndusb")
 position = Vector2(-1, -323)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=289908258]
+_spawnable_scenes = PackedStringArray("uid://dsitnylb8wxef", "uid://b503inpuib36y")
 spawn_path = NodePath("..")
 script = ExtResource("3_kelw5")
 network_player = ExtResource("4_kelw5")
+
+[connection signal="spawned" from="MultiplayerSpawner" to="MultiplayerSpawner" method="_on_spawned"]

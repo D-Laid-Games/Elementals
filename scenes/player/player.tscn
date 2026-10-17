@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bgrf8a5jonlsa" path="res://assets/player/knightBlue.png" id="2_p47bc"]
 [ext_resource type="Texture2D" uid="uid://cl42pacjd1agx" path="res://assets/player/knightOrange.png" id="3_75vfm"]
 [ext_resource type="Texture2D" uid="uid://b8cxinrp6ot14" path="res://assets/player/knightGreen.png" id="4_0owmy"]
+[ext_resource type="Script" uid="uid://cx382tlrg810a" path="res://scripts/powerups/PlayerPowerUps.gd" id="5_p47bc"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ndusb"]
 radius = 5.0
@@ -563,6 +564,19 @@ properties/4/replication_mode = 2
 position = Vector2(22, -46)
 collision_layer = 2
 script = ExtResource("1_lvxji")
+current_element = null
+facing_left = null
+is_shielding = null
+shield_rotation = null
+max_health = null
+fire_rate = null
+shield_offset = null
+fire_shield_tex = null
+water_shield_tex = null
+earth_shield_tex = null
+roll_speed = null
+roll_duration = null
+roll_cooldown = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=889094119]
 position = Vector2(0, 7)
@@ -596,3 +610,8 @@ show_percentage = false
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=381843364]
 replication_config = SubResource("SceneReplicationConfig_qhqgy")
+
+[node name="PlayerPowerUps" type="Node" parent="." unique_id=271870712]
+script = ExtResource("5_p47bc")
+
+[connection signal="loadout_changed" from="PlayerPowerUps" to="." method="_on_player_power_ups_loadout_changed"]

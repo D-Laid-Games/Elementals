@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PowerUpDefinition" format=3 uid="uid://camf8gyp8gqkl"]
+
+[ext_resource type="Texture2D" uid="uid://d0jmd8tqa0or0" path="res://assets/powerups/bulwark_icon.png" id="1_1y5aq"]
+[ext_resource type="Script" uid="uid://dds4ccabw23le" path="res://scripts/powerups/PowerUpDefinition.gd" id="2_qe5ab"]
+
+[resource]
+script = ExtResource("2_qe5ab")
+id = "bulwark"
+display_name = "Bulwark"
+description = "Your shield is 20% longer but rotates more slowly."
+icon = ExtResource("1_1y5aq")
+metadata/_custom_type_script = "uid://dds4ccabw23le"

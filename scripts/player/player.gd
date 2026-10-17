@@ -1,4 +1,5 @@
 extends CharacterBody2D
+class_name Player
 
 enum Element { FIRE, WATER, EARTH }
 
@@ -58,8 +59,10 @@ const SHIELD_SCENE: PackedScene = preload("res://scenes/shield/shield.tscn")
 @onready var water_sprite: AnimatedSprite2D = $WaterAnimatedSprite2D
 @onready var earth_sprite: AnimatedSprite2D = $EarthAnimatedSprite2D
 @onready var health_bar: ProgressBar = $HealthBar
+@onready var powerups: PlayerPowerUps = $PlayerPowerUps
 
 # --- LOCAL STATE ---
+var is_dead: bool
 var current_health: float
 var can_shoot: bool = true
 var is_rolling: bool = false
@@ -71,7 +74,11 @@ var jumps_left: int = 1
 var has_water_double_jumped: bool = false
 var current_sprite: AnimatedSprite2D
 var shield: Area2D
-
+var shield_collision: CollisionShape2D
+var rectangle: RectangleShape2D
+var shield_sprite: Sprite2D
+var original_shield_size: Vector2
+var original_shield_sprite_scale: float
 
 # ==============================================================================
 # LIFECYCLE & INITIALIZATION
@@ -82,6 +89,7 @@ func _enter_tree() -> void:
 		
 func _ready() -> void:
 	# 2. Local Setup
+	is_dead = false
 	current_health = max_health
 	if health_bar:
 		health_bar.max_value = max_health
@@ -89,6 +97,12 @@ func _ready() -> void:
 
 	# 3. Instantiate Shield Node
 	shield = SHIELD_SCENE.instantiate() as Area2D
+	shield_collision = shield.get_node("CollisionShape2D")
+	rectangle = shield_collision.shape.duplicate() as RectangleShape2D
+	shield_sprite = shield.get_node("Shield")
+	original_shield_size = Vector2(rectangle.size.x, rectangle.size.y)
+	original_shield_sprite_scale = shield_sprite.scale.y
+	calculate_shield_size()
 	shield.position = shield_offset
 	shield.visible = false
 	shield.monitoring = false
@@ -102,7 +116,7 @@ func _ready() -> void:
 # ==============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_multiplayer_authority():
+	if is_dead or not is_multiplayer_authority():
 		return
 
 	if event.is_echo():
@@ -123,7 +137,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	# 1. GUARD: Exit immediately if this node belongs to a remote peer
-	if not is_multiplayer_authority():
+	if is_dead or not is_multiplayer_authority():
 		return
 
 	# 2. ROLL EXECUTION
@@ -140,12 +154,16 @@ func _physics_process(delta: float) -> void:
 		current_speed = SPEED * 2.0
 
 	# 4. SHIELD TOGGLE & AIMING
-	# Inside _physics_process(delta) in player.gd:
 	is_shielding = Input.is_action_pressed("shield")
+	var shield_rotation_speed: int = powerups.get_shield_turn_speed()
 	var mouse_dir: Vector2 = (get_global_mouse_position() - global_position).normalized()
 	
 	# Setting this variable triggers the setter locally AND replicates to server/clients
-	shield_rotation = mouse_dir.angle()
+	if shield_rotation_speed == 0:
+		shield_rotation = mouse_dir.angle()
+	else:
+		var mouse_aim_angle: float = rotate_toward(shield.rotation, mouse_dir.angle(), deg_to_rad(shield_rotation_speed) * delta)
+		shield_rotation = mouse_aim_angle
 
 	# 5. GRAVITY & JUMP RESET
 	if not is_on_floor():
@@ -183,6 +201,13 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+
+func calculate_shield_size() -> void:
+	var shield_length_multiplier: float = powerups.get_shield_length_multiplier()
+	
+	shield_collision.shape = rectangle
+	rectangle.size = Vector2(original_shield_size.x, original_shield_size.y * shield_length_multiplier)
+	shield_sprite.scale.y = original_shield_sprite_scale * shield_length_multiplier
 
 # ==============================================================================
 # ACTIONS & MECHANICS
@@ -246,20 +271,23 @@ func _spawn_projectile(dir: Vector2) -> void:
 func take_damage(amount: float) -> void:
 	if not multiplayer.is_server():
 		return
-
+	
+	if is_dead:
+		return
+	
 	current_health = clamp(current_health - amount, 0.0, max_health)
 	rpc("sync_health", current_health)
 
 	if current_health <= 0.0:
-		rpc("die")
+		is_dead = true
+		die()
 
 @rpc("any_peer", "call_local", "reliable")
 func sync_health(new_health: float) -> void:
 	current_health = new_health
 	if health_bar:
 		health_bar.value = current_health
-		
-@rpc("any_peer", "call_local", "reliable")
+
 func die() -> void:
 	if multiplayer.is_server():
 		var spawner: MultiplayerSpawner = get_tree().current_scene.get_node_or_null("MultiplayerSpawner")
@@ -288,12 +316,20 @@ func _update_element_visuals() -> void:
 		current_sprite.flip_h = facing_left
 
 	if shield:
-		var shield_sprite: Sprite2D = shield.get_node_or_null("Shield") as Sprite2D
-		if not shield_sprite:
-			shield_sprite = shield.get_node_or_null("Sprite2D") as Sprite2D
+		var shield_sprite2d: Sprite2D = shield.get_node_or_null("Shield") as Sprite2D
+		if not shield_sprite2d:
+			shield_sprite2d = shield.get_node_or_null("Sprite2D") as Sprite2D
 			
-		if shield_sprite:
+		if shield_sprite2d:
 			match current_element:
-				Element.FIRE: shield_sprite.texture = fire_shield_tex
-				Element.WATER: shield_sprite.texture = water_shield_tex
-				Element.EARTH: shield_sprite.texture = earth_shield_tex
+				Element.FIRE: shield_sprite2d.texture = fire_shield_tex
+				Element.WATER: shield_sprite2d.texture = water_shield_tex
+				Element.EARTH: shield_sprite2d.texture = earth_shield_tex
+
+
+func _on_player_power_ups_loadout_changed(powerup: String) -> void:
+	match powerup:
+		"bulwark":
+			calculate_shield_size()
+		_:
+			print("unkown")
